@@ -2,6 +2,14 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Crocodile">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+
 <title>نظام إدارة مدارس السباحة</title>
 <style>
 :root{--navy:#10365d;--blue:#1677c8;--sky:#eaf4fc;--bg:#f3f7fb;--ink:#19324b;--muted:#718397;--line:#dce7f0;--green:#16845b;--red:#c84444;--amber:#a66b08;--shadow:0 8px 24px #123b6812}
@@ -443,7 +451,17 @@ function coachReportDocument(id){
  function exitCoachReport(){try{window.close()}catch(e){}setTimeout(()=>{if(!window.closed){if(history.length>1)history.back();else alert('يمكنك إغلاق علامة التبويب للعودة إلى البرنامج.')}},150)}
  function downloadCoachReport(){const html='<!doctype html>'+document.documentElement.outerHTML;const blob=new Blob([html],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=${JSON.stringify('ملف المدرب - '+c.name+'.html')};document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
  async function shareCoachReport(){const html='<!doctype html>'+document.documentElement.outerHTML;const file=new File([html],${JSON.stringify('ملف المدرب - '+c.name+'.html')},{type:'text/html'});try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({title:${JSON.stringify(title)},text:'ملف المدرب: بيانات الاتصال والتقييمات الشهرية والمخالفات',files:[file]});return}if(navigator.share){await navigator.share({title:${JSON.stringify(title)},text:'ملف المدرب: بيانات الاتصال والتقييمات الشهرية والمخالفات'});return}alert('المشاركة المباشرة غير متاحة في هذا المتصفح. استخدم «حفظ على الجهاز» ثم أرفق الملف في واتساب أو أي تطبيق.')}catch(e){if(e.name!=='AbortError')alert('تعذرت المشاركة. يمكنك حفظ الملف ثم مشاركته من جهازك.')}}
- <\/script></body></html>`;
+ <\/script><script>
+/* تثبيت نسخة PWA على iPhone ودعم التشغيل دون اتصال بعد أول زيارة */
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function (err) {
+      console.warn('تعذر تسجيل Service Worker:', err);
+    });
+  });
+}
+</script>
+</body></html>`;
 }
 function printCoachFile(id){const html=coachReportDocument(id);if(!html)return;const w=window.open('','_blank');if(!w)return alert('يرجى السماح بفتح النوافذ المنبثقة لعرض ملف المدرب');w.document.open();w.document.write(html);w.document.close();setTimeout(()=>decoratePrintWindow(w),60);}
 function printCoachViolations(id){
